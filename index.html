@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Modelo 3D — clase del 19/10/2026</title>
+<meta name="color-scheme" content="light dark">
+
+<!-- model-viewer de Google (versión fija). Requiere conexión a internet. -->
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+
+<style>
+  :root {
+    --bg: #eceef0;
+    --bar: #f6f7f8;
+    --line: #d5d9dd;
+    --ink: #1c242d;
+    --muted: #66717d;
+    --accent: #1f5f7a;
+    --btn-bg: #f6f7f8;
+    --btn-hover: #e3e7ea;
+    --bar-h: 44px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16191d;
+      --bar: #1c2025;
+      --line: #2d333a;
+      --ink: #e6e9ec;
+      --muted: #93a0ac;
+      --accent: #7fc0d9;
+      --btn-bg: #1c2025;
+      --btn-hover: #2a3037;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+
+  /* Barra de título */
+  header {
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: calc(var(--bar-h) + env(safe-area-inset-top, 0px));
+    padding: env(safe-area-inset-top, 0px) max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px));
+    display: flex;
+    align-items: center;
+    background: var(--bar);
+    border-bottom: 1px solid var(--line);
+    z-index: 2;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Visor */
+  main {
+    position: fixed;
+    inset: calc(var(--bar-h) + env(safe-area-inset-top, 0px)) 0 0 0;
+  }
+  model-viewer {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    --poster-color: transparent;
+    --progress-bar-color: var(--accent);
+    --progress-bar-height: 2px;
+    outline: none;
+  }
+  model-viewer:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+
+  /* Controles */
+  .controls {
+    position: fixed;
+    left: 50%;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+  }
+  .controls button {
+    appearance: none;
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--ink);
+    background: var(--btn-bg);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0 18px;
+    height: 40px;
+    min-width: 44px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 120ms ease, border-color 120ms ease;
+  }
+  .controls button:hover { background: var(--btn-hover); }
+  .controls button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .controls button[aria-pressed="true"] {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Ayuda de gestos: desaparece tras la primera interacción */
+  .hint {
+    position: fixed;
+    left: 50%;
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: calc(100% - 32px);
+    text-align: center;
+    font-size: 0.8125rem;
+    color: var(--muted);
+    pointer-events: none;
+    transition: opacity 400ms ease;
+    z-index: 1;
+  }
+  .hint.is-hidden { opacity: 0; }
+
+  /* Mensaje de error */
+  .error {
+    position: fixed;
+    inset: calc(var(--bar-h) + env(safe-area-inset-top, 0px)) 0 0 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    z-index: 1;
+  }
+  .error.is-visible { display: flex; }
+  .error p { max-width: 46ch; margin: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <!-- Cambia este texto por el tema técnico de la clase -->
+  <h1>Modelo 3D — clase del 19/10/2026</h1>
+</header>
+
+<main>
+  <model-viewer
+    id="visor"
+    src="19_10_2026.glb"
+    alt="Modelo 3D de la clase del 19/10/2026"
+    camera-controls
+    touch-action="none"
+    camera-orbit="0deg 75deg 105%"
+    min-camera-orbit="auto auto 5%"
+    max-camera-orbit="auto auto 400%"
+    interaction-prompt="none"
+    shadow-intensity="0.8"
+    shadow-softness="1"
+    exposure="1"
+    tone-mapping="neutral"
+    rotation-per-second="20deg"
+    auto-rotate-delay="1500"
+    interpolation-decay="80">
+    <div slot="progress-bar"></div>
+  </model-viewer>
+</main>
+
+<p class="hint" id="hint">Arrastra para rotar, pellizca o usa la rueda para acercar, dos dedos para desplazar</p>
+
+<div class="controls">
+  <button type="button" id="btn-rotar" aria-pressed="false">Rotación automática</button>
+  <button type="button" id="btn-reset">Restaurar vista</button>
+</div>
+
+<div class="error" id="error" role="alert">
+  <p>No se pudo cargar el modelo <strong>19_10_2026.glb</strong>. Comprueba que esté en la misma carpeta que este archivo y abre la página desde un servidor (por ejemplo GitHub Pages), no con doble clic.</p>
+</div>
+
+<script>
+  (function () {
+    var visor = document.getElementById('visor');
+    var btnRotar = document.getElementById('btn-rotar');
+    var btnReset = document.getElementById('btn-reset');
+    var hint = document.getElementById('hint');
+    var errorBox = document.getElementById('error');
+
+    var VISTA_INICIAL = '0deg 75deg 105%';
+
+    // Rotación automática (apagada al inicio)
+    btnRotar.addEventListener('click', function () {
+      var activa = !visor.autoRotate;
+      visor.autoRotate = activa;
+      btnRotar.setAttribute('aria-pressed', String(activa));
+    });
+
+    // Restaurar vista: órbita, objetivo (desplazamiento) y campo de visión
+    btnReset.addEventListener('click', async function () {
+      // Un valor distinto fuerza la actualización aunque la vista inicial ya sea la actual
+      visor.cameraOrbit = '1deg 75deg 105%';
+      await visor.updateComplete;
+      visor.cameraOrbit = VISTA_INICIAL;
+      visor.cameraTarget = 'auto auto auto';
+      visor.fieldOfView = 'auto';
+      if (typeof visor.resetTurntableRotation === 'function') visor.resetTurntableRotation(0);
+    });
+
+    // Ocultar la ayuda tras la primera interacción
+    function ocultarAyuda() { hint.classList.add('is-hidden'); }
+    visor.addEventListener('camera-change', function (e) {
+      if (e.detail && e.detail.source === 'user-interaction') ocultarAyuda();
+    });
+    setTimeout(ocultarAyuda, 8000);
+
+    // Sin menú contextual (el clic derecho se usa para desplazar)
+    visor.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+
+    // Error de carga
+    visor.addEventListener('error', function () {
+      errorBox.classList.add('is-visible');
+      hint.classList.add('is-hidden');
+    });
+  })();
+</script>
+
+</body>
+</html>
